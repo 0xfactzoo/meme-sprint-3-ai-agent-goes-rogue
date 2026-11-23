@@ -242,7 +242,6 @@ const BLUE: RGB = [74, 144, 217];
 const BLUE_DARK: RGB = [43, 108, 178];
 const STEEL: RGB = [120, 130, 140];
 const DESK: RGB = [139, 90, 43];
-const GREEN: RGB = [0, 150, 60];
 
 function drawScene(): Canvas {
   const cv = new Canvas(1024, 1024);
@@ -265,9 +264,9 @@ function drawScene(): Canvas {
 
   // Robot body
   cv.roundRect(330, 400, 200, 160, 22, BLUE);
-  // Chest light: a little "agent online" panel
+  // Chest light: red now — the agent has gone rogue (was a green "online" light)
   cv.roundRect(405, 470, 50, 34, 8, WHITE);
-  cv.circle(430, 487, 9, GREEN);
+  cv.circle(430, 487, 9, RED);
 
   // Robot arms reaching for the keyboard
   cv.line(530, 450, 610, 520, 22, BLUE_DARK);
@@ -289,12 +288,13 @@ function drawScene(): Canvas {
   cv.halfCircle(430, 352, 26, BLACK);
   cv.rect(404, 352, 52, 8, BLUE); // flatten the top of the grin
 
-  // Laptop on the desk, screen facing us: the evidence.
-  cv.rect(600, 470, 210, 92, BLACK); // screen
-  cv.rect(612, 482, 186, 68, WHITE); // screen glow
-  cv.rect(588, 562, 234, 16, STEEL); // keyboard base
-  drawText(cv, "SENT: 4,096", 705, 492, 2, BLACK);
-  drawText(cv, "RE: I QUIT", 705, 518, 2, RED);
+  // Laptop on the desk, screen facing us: the evidence. Screen widened a
+  // little so the scale-3 text fits inside the glow.
+  cv.rect(592, 470, 226, 92, BLACK); // screen
+  cv.rect(604, 482, 202, 68, WHITE); // screen glow
+  cv.rect(580, 562, 250, 16, STEEL); // keyboard base
+  drawText(cv, "SENT: 4,096", 705, 492, 3, BLACK);
+  drawText(cv, "RE: I QUIT", 705, 520, 3, RED);
 
   // --- Speech bubble: the agent reports back -------------------------------
   cv.roundRect(560, 150, 420, 158, 24, WHITE);
@@ -303,13 +303,22 @@ function drawScene(): Canvas {
   cv.rect(560, 302, 420, 6, BLACK);
   cv.rect(560, 150, 6, 158, BLACK);
   cv.rect(974, 150, 6, 158, BLACK);
-  // Bubble tail: filled triangle pointing at the robot, drawn last so it
-  // breaks through the bubble's bottom edge.
-  for (let i = 0; i <= 48; i++) {
-    const t = i / 48;
-    const y = Math.round(304 + t * 52);
-    const xl = Math.round(625 + t * (548 - 625));
-    const xr = Math.round(705 + t * (548 - 705));
+  // Bubble tail: outlined triangle pointing at the robot, drawn last so it
+  // breaks through the bubble's bottom edge; the tip lands on the robot's
+  // head. Black triangle first (the outline), white triangle inside it,
+  // inset 6 px per side so the outline tapers evenly to the tip.
+  for (let i = 0; i <= 78; i++) {
+    const t = i / 78;
+    const y = Math.round(302 + t * 78);
+    const xl = Math.round(618 + t * (500 - 618));
+    const xr = Math.round(712 + t * (500 - 712));
+    cv.rect(xl, y, xr - xl, 2, BLACK);
+  }
+  for (let i = 0; i <= 78; i++) {
+    const t = i / 78;
+    const y = Math.round(302 + t * 78);
+    const xl = Math.round(624 + t * (500 - 624));
+    const xr = Math.round(706 + t * (500 - 706));
     cv.rect(xl, y, xr - xl, 2, WHITE);
   }
   drawText(cv, "DONE! I REPLIED", 770, 178, 3, BLACK);
